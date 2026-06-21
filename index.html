@@ -158,9 +158,11 @@
       -webkit-mask: url(#shamrock-mask);
     }
     .dot-grid {
-      display: grid; width: 100%; gap: 4px; padding: 1.5rem;
+      display: grid; width: 100%; gap: 2px; padding: 1rem;
+      grid-template-columns: repeat(auto-fill, 6px);
+      grid-auto-rows: 6px;
     }
-    .dot { aspect-ratio: 1; border-radius: 2px; }
+    .dot { width: 6px; height: 6px; border-radius: 1px; }
 
     /* ─── HERO ─── */
     .hero {
@@ -846,10 +848,9 @@
 
     // Interactive hero backdrop with cursor trail
     function initHero() {
-      const COLS = 100, ROWS = 35;
-      const DOTS = makeDots(COLS * ROWS, 7919);
-      const PRIMARY = 'color-mix(in srgb, #006837 92%, white)';  /* Irish green dots */
-      const ACCENT  = 'color-mix(in srgb, #FF7900 80%, white)';  /* Irish orange dots */
+      const DOTS = makeDots(20000, 7919);
+      const PRIMARY = 'color-mix(in srgb, #006837 92%, white)';
+      const ACCENT  = 'color-mix(in srgb, #FF7900 80%, white)';
 
       const baseGrid   = document.getElementById('hero-base-grid');
       const hlGrid     = document.getElementById('hero-highlight-grid');
@@ -857,9 +858,6 @@
       const backdrop   = document.getElementById('hero-backdrop');
       if (!baseGrid || !hlGrid) return;
 
-      const cols = `repeat(${COLS}, minmax(0, 1fr))`;
-      baseGrid.style.gridTemplateColumns = cols;
-      hlGrid.style.gridTemplateColumns   = cols;
       fillGrid(baseGrid, DOTS, PRIMARY, ACCENT);
       fillGrid(hlGrid,   DOTS, PRIMARY, ACCENT);
 
