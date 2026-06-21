@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Harmonia Wang — AI Researcher</title>
+  <meta name="description" content="AI researcher studying decision-making in LLMs via adversarial testing, cognitive modelling, and construct-based evaluation.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ─── DESIGN TOKENS ─── */
+    :root {
+      --primary:    #374151;
+      --accent:     #E11D48;
+      --accent-dim: #be123c;
+      --ink:        #111827;
+      --muted:      #6B7280;
+      --fog:        #F3F4F6;
+      --fog-light:  #F9FAFB;
+      --line:       #E5E7EB;
+      --white:      #ffffff;
+
+      --font-sans:  'Inter', system-ui, -apple-system, sans-serif;
+      --font-serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+      --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* ─── RESET ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-sans);
+      color: var(--ink);
+      background: var(--white);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── LAYOUT ─── */
+    .container {
+      max-width: 80rem;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    @media (min-width: 640px)  { .container { padding: 0 2rem; } }
+    @media (min-width: 1024px) { .container { padding: 0 2.5rem; } }
+
+    /* ─── SKIP LINK ─── */
+    .skip-link {
+      position: absolute; width: 1px; height: 1px;
+      padding: 0; margin: -1px; overflow: hidden;
+      clip: rect(0,0,0,0); border: 0;
+    }
+    .skip-link:focus {
+      all: unset; position: fixed; left: 1rem; top: 1rem; z-index: 100;
+      padding: 0.5rem 1rem; background: var(--accent); color: white;
+      font-weight: 600; border-radius: 0.375rem;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      position: sticky; top: 0; z-index: 40;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .nav-inner {
+      display: flex; align-items: center;
+      justify-content: space-between; padding: 0.75rem 0;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 0.625rem;
+      text-decoration: none; min-width: 0;
+    }
+    .nav-name {
+      font-size: 1.0625rem; font-weight: 700;
+      letter-spacing: -0.02em; color: var(--ink); white-space: nowrap;
+    }
+    .nav-divider {
+      width: 2px; height: 18px;
+      background: var(--accent); border-radius: 9999px; flex-shrink: 0;
+    }
+    .nav-subtitle {
+      font-size: 0.8125rem; font-weight: 500;
+      color: var(--muted); white-space: nowrap;
+    }
+    nav { display: flex; align-items: center; gap: 0.125rem; }
+    nav a {
+      position: relative; padding: 0.375rem 0.75rem;
+      font-size: 0.875rem; font-weight: 500;
+      color: var(--muted); text-decoration: none;
+      border-radius: 0.375rem; transition: color 0.15s;
+    }
+    nav a:hover { color: var(--ink); }
+    nav a.active { color: var(--ink); }
+    nav a.active::after {
+      content: ''; position: absolute; bottom: 0;
+      left: 0.75rem; right: 0.75rem; height: 2px;
+      background: var(--accent); border-radius: 9999px;
+    }
+
+    /* ─── DOT GRID BACKDROP ─── */
+    .backdrop {
+      pointer-events: none; position: absolute; inset: 0; overflow: hidden;
+    }
+    .grid-layer {
+      position: absolute; inset: 0; display: flex; align-items: center;
+    }
+    .layer-base      { opacity: 0.13; }
+    .layer-highlight { opacity: 0.96; will-change: filter, mask-image; }
+    .dot-grid {
+      display: grid; width: 100%; gap: 5px; padding: 1.5rem;
+    }
+    .dot { aspect-ratio: 1; border-radius: 2px; }
+
+    /* ─── HERO ─── */
+    .hero {
+      position: relative; overflow: hidden;
+      border-bottom: 1px solid var(--line);
+      background: var(--white); padding: 5rem 0 6rem;
+    }
+    @media (min-width: 640px) { .hero { padding: 6.5rem 0 7.5rem; } }
+    .hero-content { position: relative; z-index: 1; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.6875rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 1.25rem;
+    }
+    .eyebrow::before {
+      content: ''; display: block; width: 1.5rem; height: 2px;
+      background: var(--accent); border-radius: 9999px;
+    }
+    .hero-title {
+      font-family: var(--font-serif);
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 600; line-height: 1.1;
+      letter-spacing: -0.025em; color: var(--ink);
+      max-width: 38rem; margin-bottom: 1.5rem;
+    }
+    .hero-desc {
+      font-size: 1.125rem; line-height: 1.75; color: var(--muted);
+      max-width: 36rem; margin-bottom: 2.5rem;
+    }
+    .hero-ctas { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.375rem;
+      padding: 0.75rem 1.5rem; background: var(--accent); color: white;
+      font-size: 0.9375rem; font-weight: 600; border-radius: 0.375rem;
+      text-decoration: none;
+      transition: background 0.15s, transform 0.15s var(--ease-out);
+    }
+    .btn-primary:hover { background: var(--accent-dim); transform: translateY(-1px); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 0.375rem;
+      padding: 0.75rem 1.5rem; background: transparent; color: var(--ink);
+      font-size: 0.9375rem; font-weight: 500;
+      border: 1px solid var(--line); border-radius: 0.375rem;
+      text-decoration: none;
+      transition: background 0.15s, border-color 0.15s, transform 0.15s var(--ease-out);
+    }
+    .btn-ghost:hover { background: var(--fog); border-color: var(--muted); transform: translateY(-1px); }
+
+    /* ─── SECTION SHARED ─── */
+    .section     { padding: 4.5rem 0 5.5rem; }
+    .section-alt { padding: 4.5rem 0 5.5rem; background: var(--fog-light); }
+    @media (min-width: 640px) { .section, .section-alt { padding: 5.5rem 0 6.5rem; } }
+    .section-hd { margin-bottom: 3rem; }
+    .section-label {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.6875rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 0.75rem;
+    }
+    .section-label::before {
+      content: ''; display: block; width: 1rem; height: 2px;
+      background: var(--accent); border-radius: 9999px;
+    }
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: clamp(1.75rem, 3vw, 2.25rem);
+      font-weight: 600; letter-spacing: -0.02em;
+      color: var(--ink); line-height: 1.25;
+    }
+
+    /* ─── ABOUT ─── */
+    .about-grid { display: grid; gap: 3.5rem; align-items: start; }
+    @media (min-width: 768px) { .about-grid { grid-template-columns: 220px 1fr; } }
+    .photo-wrap { display: flex; flex-direction: column; gap: 1.25rem; }
+    .photo {
+      width: 100%; max-width: 220px;
+      aspect-ratio: 1; border-radius: 0.75rem;
+      object-fit: cover; object-position: center top;
+      border: 1px solid var(--line);
+      display: block;
+    }
+    .photo-placeholder {
+      width: 100%; max-width: 220px; aspect-ratio: 1;
+      border-radius: 0.75rem; background: var(--fog); border: 1px solid var(--line);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 5rem; color: var(--muted); user-select: none;
+    }
+    .social-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 0.375rem;
+      padding: 0.375rem 0.75rem;
+      background: var(--fog); color: var(--ink);
+      font-size: 0.8125rem; font-weight: 500;
+      border-radius: 9999px; text-decoration: none;
+      border: 1px solid var(--line);
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .chip:hover { background: white; border-color: var(--muted); }
+    .chip svg { flex-shrink: 0; }
+    .about-body { display: flex; flex-direction: column; gap: 1rem; }
+    .about-body p {
+      font-size: 1.0625rem; line-height: 1.8; color: var(--muted);
+    }
+    .about-body strong { color: var(--ink); font-weight: 600; }
+    .about-tags {
+      display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem;
+    }
+    .tag {
+      padding: 0.25rem 0.625rem;
+      background: rgba(225,29,72,0.07); color: var(--accent);
+      font-size: 0.75rem; font-weight: 600;
+      border-radius: 9999px; letter-spacing: 0.03em;
+    }
+
+    /* ─── PUBLICATIONS ─── */
+    .pub-list { display: flex; flex-direction: column; }
+    .pub-item {
+      display: grid; gap: 0.5rem;
+      padding: 1.5rem 0; border-bottom: 1px solid var(--line);
+    }
+    .pub-item:first-child { border-top: 1px solid var(--line); }
+    @media (min-width: 640px) {
+      .pub-item { grid-template-columns: 3.5rem 1fr; gap: 1.75rem; align-items: start; }
+    }
+    .pub-year {
+      font-size: 0.8125rem; font-weight: 700; color: var(--accent);
+      font-variant-numeric: tabular-nums; padding-top: 0.15rem;
+    }
+    .pub-body { min-width: 0; }
+    .pub-title {
+      font-size: 1rem; font-weight: 600; color: var(--ink);
+      line-height: 1.45; margin-bottom: 0.3rem;
+    }
+    .pub-title a { color: inherit; text-decoration: none; }
+    .pub-title a:hover { color: var(--accent); }
+    .pub-authors { font-size: 0.875rem; color: var(--muted); margin-bottom: 0.2rem; }
+    .pub-authors strong { color: var(--ink); font-weight: 600; }
+    .pub-venue   { font-size: 0.8125rem; color: var(--muted); font-style: italic; }
+    .pub-links   { display: flex; flex-wrap: wrap; gap: 0.375rem; margin-top: 0.625rem; }
+    .pub-link {
+      display: inline-flex; align-items: center; gap: 0.25rem;
+      padding: 0.2rem 0.6rem;
+      font-size: 0.6875rem; font-weight: 700;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      border-radius: 9999px; text-decoration: none;
+      background: rgba(225,29,72,0.08); color: var(--accent);
+      transition: background 0.15s;
+    }
+    .pub-link:hover { background: rgba(225,29,72,0.16); }
+
+    /* ─── PROJECTS ─── */
+    .projects-grid { display: grid; gap: 1.25rem; }
+    @media (min-width: 600px)  { .projects-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .projects-grid { grid-template-columns: repeat(3, 1fr); } }
+    .project-card {
+      display: flex; flex-direction: column; gap: 0.875rem;
+      padding: 1.5rem; border: 1px solid var(--line); border-radius: 0.625rem;
+      text-decoration: none; background: var(--white);
+      transition: box-shadow 0.25s, border-color 0.25s, transform 0.25s var(--ease-out);
+    }
+    .project-card:hover {
+      box-shadow: 0 6px 24px rgba(0,0,0,0.09);
+      border-color: var(--primary); transform: translateY(-3px);
+    }
+    .project-icon {
+      width: 2.5rem; height: 2.5rem; border-radius: 0.5rem;
+      background: rgba(225,29,72,0.08);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.25rem; flex-shrink: 0;
+    }
+    .project-name { font-size: 1rem; font-weight: 600; color: var(--ink); line-height: 1.35; }
+    .project-meta { font-size: 0.75rem; color: var(--accent); font-weight: 600; }
+    .project-desc {
+      font-size: 0.875rem; color: var(--muted); line-height: 1.65; flex: 1;
+    }
+    .project-cta {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-size: 0.8125rem; font-weight: 600; color: var(--accent);
+    }
+
+    /* ─── CONTACT (dark) ─── */
+    .contact-band {
+      position: relative; overflow: hidden;
+      padding: 5rem 0 6rem; background: var(--ink); color: white;
+    }
+    .contact-inner { position: relative; z-index: 1; max-width: 44rem; }
+    .contact-label {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.6875rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgba(255,255,255,0.4); margin-bottom: 0.75rem;
+    }
+    .contact-label::before {
+      content: ''; display: block; width: 1rem; height: 2px;
+      background: rgba(255,255,255,0.25); border-radius: 9999px;
+    }
+    .contact-title {
+      font-family: var(--font-serif);
+      font-size: clamp(1.875rem, 3vw, 2.625rem);
+      font-weight: 600; color: white; line-height: 1.2; margin-bottom: 1rem;
+    }
+    .contact-desc {
+      font-size: 1.0625rem; color: rgba(255,255,255,0.6);
+      margin-bottom: 2rem; line-height: 1.75;
+    }
+    .contact-links { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+    .contact-link {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.625rem 1.25rem;
+      background: rgba(255,255,255,0.08); color: white;
+      font-size: 0.875rem; font-weight: 500;
+      border: 1px solid rgba(255,255,255,0.15); border-radius: 0.375rem;
+      text-decoration: none;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .contact-link:hover { background: rgba(255,255,255,0.16); border-color: rgba(255,255,255,0.3); }
+
+    /* ─── FOOTER ─── */
+    footer { padding: 1.5rem 0; border-top: 1px solid var(--line); }
+    .footer-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 0.5rem;
+    }
+    .footer-text { font-size: 0.8125rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- ═══ HEADER ═══ -->
+  <header>
+    <div class="container">
+      <div class="nav-inner">
+        <a href="#" class="nav-brand">
+          <span class="nav-name">Harmonia Wang</span>
+          <span class="nav-divider"></span>
+          <span class="nav-subtitle">AI Researcher</span>
+        </a>
+        <nav id="main-nav">
+          <a href="#about">About</a>
+          <a href="#publications">Publications</a>
+          <a href="#projects">Projects</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ HERO ═══ -->
+  <section class="hero" id="main-content">
+    <div class="backdrop" id="hero-backdrop" aria-hidden="true">
+      <div class="grid-layer layer-base">
+        <div class="dot-grid" id="hero-base-grid"></div>
+      </div>
+      <div class="grid-layer layer-highlight" id="hero-highlight">
+        <div class="dot-grid" id="hero-highlight-grid"></div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="hero-content">
+        <div class="eyebrow">AI Research &amp; Evaluation</div>
+        <h1 class="hero-title">Harmonia Wang</h1>
+        <p class="hero-desc">
+          AI researcher studying <strong style="color:var(--ink)">decision-making in large language models</strong>
+          — using adversarial testing, construct-based evaluation, and computational modelling
+          to advance safe and responsible human–AI interaction.
+        </p>
+        <div class="hero-ctas">
+          <a href="#publications" class="btn-primary">Publications</a>
+          <a href="#contact" class="btn-ghost">Get in touch →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ ABOUT ═══ -->
+  <section class="section" id="about">
+    <div class="container">
+      <div class="section-hd">
+        <div class="section-label">About</div>
+        <h2 class="section-title">Background &amp; Research</h2>
+      </div>
+      <div class="about-grid">
+        <div class="photo-wrap">
+          <img src="IMG_9267.JPG" alt="Harmonia Wang" class="photo">
+          <div class="social-chips">
+            <a href="mailto:Harmonia.Wang@gmail.com" class="chip">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+              Email
+            </a>
+            <a href="https://scholar.google.com/citations?view_op=list_works&hl=en&user=TYrXbC8AAAAJ" class="chip" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              Scholar
+            </a>
+            <a href="https://github.com/AIBLab-Harmonia" class="chip" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+              GitHub
+            </a>
+            <a href="https://www.linkedin.com/in/wangh14/" class="chip" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              LinkedIn
+            </a>
+            <a href="https://orcid.org/0009-0005-5961-1847" class="chip" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zM7.369 4.378c.525 0 .947.431.947.947s-.422.947-.947.947a.95.95 0 0 1-.947-.947c0-.525.422-.947.947-.947zm-.722 3.038h1.444v10.041H6.647V7.416zm3.562 0h3.9c3.712 0 5.344 2.653 5.344 5.025 0 2.578-2.016 5.016-5.325 5.016h-3.919V7.416zm1.444 1.303v7.444h2.297c3.272 0 3.872-2.484 3.872-3.722 0-2.016-1.097-3.722-3.872-3.722h-2.297z"/></svg>
+              ORCID
+            </a>
+          </div>
+        </div>
+
+        <div class="about-body">
+          <p>
+            I am a <strong>Research Assistant at the Insight Research Ireland Centre for Data Analytics, DCU</strong>
+            and a <strong>Machine Learning Researcher at Etsy</strong>, based in Dublin, Ireland.
+            I hold a Google Professional Data Engineer and ML Engineer certification.
+          </p>
+          <p>
+            My research investigates how large language models reason and decide under uncertainty,
+            using adversarial testing, representational probing, reversal learning paradigms,
+            and Theory-of-Mind frameworks to understand and improve AI alignment.
+            I am dedicated to building rigorous evaluation frameworks for safe and responsible AI systems.
+          </p>
+          <p>
+            I hold an <strong>MSc in Statistics and Sustainability</strong> (First Class Honours, E3 Scholarship)
+            from Trinity College Dublin, and dual Bachelor's degrees from Harbin Institute of Technology.
+          </p>
+          <div class="about-tags">
+            <span class="tag">LLM Evaluation</span>
+            <span class="tag">AI Alignment</span>
+            <span class="tag">Cognitive Science</span>
+            <span class="tag">Adversarial Testing</span>
+            <span class="tag">Reinforcement Learning</span>
+            <span class="tag">Theory of Mind</span>
+            <span class="tag">NLP</span>
+            <span class="tag">MLOps</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PUBLICATIONS ═══ -->
+  <section class="section-alt" id="publications">
+    <div class="container">
+      <div class="section-hd">
+        <div class="section-label">Publications</div>
+        <h2 class="section-title">Research Output</h2>
+      </div>
+      <div class="pub-list">
+
+        <article class="pub-item">
+          <div class="pub-year">2026</div>
+          <div class="pub-body">
+            <div class="pub-title">
+              Comparative reversal learning reveals rigid adaptation in LLMs under non-stationary uncertainty
+            </div>
+            <div class="pub-authors"><strong>Harmonia Wang</strong> et al.</div>
+            <div class="pub-venue">IPMU 2026 — 20th International Conference on Information Processing and Management of Uncertainty</div>
+            <div class="pub-links">
+              <a href="https://scholar.google.com/citations?view_op=list_works&hl=en&user=TYrXbC8AAAAJ" class="pub-link" target="_blank" rel="noopener">Scholar</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="pub-item">
+          <div class="pub-year">2026</div>
+          <div class="pub-body">
+            <div class="pub-title">
+              Beyond the Sayable: Wittgenstein, Theory of Mind and Affective Simulation of LLMs
+            </div>
+            <div class="pub-authors"><strong>Harmonia Wang</strong> et al.</div>
+            <div class="pub-venue">Women + ECR Workshop 2026</div>
+            <div class="pub-links">
+              <a href="https://scholar.google.com/citations?view_op=list_works&hl=en&user=TYrXbC8AAAAJ" class="pub-link" target="_blank" rel="noopener">Scholar</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="pub-item">
+          <div class="pub-year">2025</div>
+          <div class="pub-body">
+            <div class="pub-title">
+              Rigidity in LLM Bandits with Implications for Human-AI Dyads
+            </div>
+            <div class="pub-authors"><strong>Harmonia Wang</strong> et al.</div>
+            <div class="pub-venue">Proceedings of AICS 2025 — 33rd Irish Conference on Artificial Intelligence and Cognitive Science</div>
+            <div class="pub-links">
+              <a href="https://scholar.google.com/citations?view_op=list_works&hl=en&user=TYrXbC8AAAAJ" class="pub-link" target="_blank" rel="noopener">Scholar</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="pub-item">
+          <div class="pub-year">2025</div>
+          <div class="pub-body">
+            <div class="pub-title">
+              A SUMO-Based Digital Twin for Evaluation of Conventional and Electric Vehicle Networks
+            </div>
+            <div class="pub-authors"><strong>Harmonia Wang</strong> et al.</div>
+            <div class="pub-venue">ECCE 2025 — European Conference on Cognitive Ergonomics</div>
+            <div class="pub-links">
+              <a href="https://scholar.google.com/citations?view_op=list_works&hl=en&user=TYrXbC8AAAAJ" class="pub-link" target="_blank" rel="noopener">Scholar</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="pub-item">
+          <div class="pub-year">2024</div>
+          <div class="pub-body">
+            <div class="pub-title">
+              Behaviour Analysis and Anomaly Detection in Surveillance Systems
+            </div>
+            <div class="pub-authors"><strong>Harmonia Wang</strong> et al.</div>
+            <div class="pub-venue">Elsevier</div>
+            <div class="pub-links">
+              <a href="https://scholar.google.com/citations?view_op=list_works&hl=en&user=TYrXbC8AAAAJ" class="pub-link" target="_blank" rel="noopener">Scholar</a>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PROJECTS ═══ -->
+  <section class="section" id="projects">
+    <div class="container">
+      <div class="section-hd">
+        <div class="section-label">Projects</div>
+        <h2 class="section-title">Research Projects</h2>
+      </div>
+      <div class="projects-grid">
+
+        <a href="https://github.com/AIBLab-Harmonia" class="project-card" target="_blank" rel="noopener">
+          <div class="project-icon">🧠</div>
+          <div class="project-meta">Feb 2026 – Jun 2026</div>
+          <div class="project-name">International AI Evaluation: Capabilities &amp; Safety</div>
+          <div class="project-desc">
+            Selected for the inaugural cohort (40 of 1,600 global applicants) of a fully funded AI safety
+            programme. Advanced from foundational evaluation principles to applied risk analysis and governance,
+            with a capstone project presented in Valencia.
+          </div>
+          <span class="project-cta">View on GitHub →</span>
+        </a>
+
+        <a href="https://github.com/AIBLab-Harmonia" class="project-card" target="_blank" rel="noopener">
+          <div class="project-icon">🚗</div>
+          <div class="project-meta">Sep 2023 – Aug 2024</div>
+          <div class="project-name">Multi-Sensor Digital Twin for Motorway Networks</div>
+          <div class="project-desc">
+            Linux-based real-time digital twin framework using SUMO, Docker, and Shell to process
+            and analyse 5M+ traffic data entries. Integrates multi-sensor fusion with ML algorithms
+            to enhance accuracy in motorway scenarios.
+          </div>
+          <span class="project-cta">View on GitHub →</span>
+        </a>
+
+        <a href="https://github.com/AIBLab-Harmonia" class="project-card" target="_blank" rel="noopener">
+          <div class="project-icon">🔍</div>
+          <div class="project-meta">Jun 2025 – Present</div>
+          <div class="project-name">LLM-Based Scam &amp; Deception Detection</div>
+          <div class="project-desc">
+            Collaborating at Etsy on detecting scam listings and deceptive content using transformer-based
+            and LSTM models. Focus on evaluation metrics, benchmarking for robustness,
+            and reducing false-positive rates at scale.
+          </div>
+          <span class="project-cta">View on GitHub →</span>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CONTACT ═══ -->
+  <section class="contact-band" id="contact">
+    <div class="backdrop" aria-hidden="true" style="opacity:0.06">
+      <div class="grid-layer" style="opacity:1">
+        <div class="dot-grid" id="contact-grid"></div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="contact-inner">
+        <div class="contact-label">Contact</div>
+        <h2 class="contact-title">Get in Touch</h2>
+        <p class="contact-desc">
+          I'm always happy to discuss research, potential collaborations, or AI evaluation.
+          Reach me via email or find me online.
+        </p>
+        <div class="contact-links">
+          <a href="mailto:Harmonia.Wang@gmail.com" class="contact-link">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+            Email
+          </a>
+          <a href="https://www.linkedin.com/in/wangh14/" class="contact-link" target="_blank" rel="noopener">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            LinkedIn
+          </a>
+          <a href="https://github.com/AIBLab-Harmonia" class="contact-link" target="_blank" rel="noopener">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+            GitHub
+          </a>
+          <a href="https://scholar.google.com/citations?view_op=list_works&hl=en&user=TYrXbC8AAAAJ" class="contact-link" target="_blank" rel="noopener">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            Google Scholar
+          </a>
+          <a href="https://orcid.org/0009-0005-5961-1847" class="contact-link" target="_blank" rel="noopener">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zM7.369 4.378c.525 0 .947.431.947.947s-.422.947-.947.947a.95.95 0 0 1-.947-.947c0-.525.422-.947.947-.947zm-.722 3.038h1.444v10.041H6.647V7.416zm3.562 0h3.9c3.712 0 5.344 2.653 5.344 5.025 0 2.578-2.016 5.016-5.325 5.016h-3.919V7.416zm1.444 1.303v7.444h2.297c3.272 0 3.872-2.484 3.872-3.722 0-2.016-1.097-3.722-3.872-3.722h-2.297z"/></svg>
+            ORCID
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <span class="footer-text">© 2026 Harmonia Wang</span>
+        <span class="footer-text">Dublin, Ireland</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══ SCRIPTS ═══ -->
+  <script>
+    'use strict';
+
+    // Seeded LCG pseudo-random — consistent dot pattern across reloads
+    function makePRNG(seed) {
+      let s = seed >>> 0;
+      return () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+    }
+
+    function makeDots(count, seed) {
+      const rand = makePRNG(seed);
+      return Array.from({length: count}, () => {
+        const r = rand();
+        if (r < 0.05) return 'accent';
+        if (r < 0.55) return 'primary';
+        return 'empty';
+      });
+    }
+
+    function fillGrid(el, dots, primaryColor, accentColor) {
+      const frag = document.createDocumentFragment();
+      for (const type of dots) {
+        const d = document.createElement('div');
+        d.className = 'dot';
+        if (type === 'primary') d.style.backgroundColor = primaryColor;
+        else if (type === 'accent') d.style.backgroundColor = accentColor;
+        frag.appendChild(d);
+      }
+      el.appendChild(frag);
+    }
+
+    // Interactive hero backdrop with cursor trail
+    function initHero() {
+      const COLS = 80, ROWS = 30;
+      const DOTS = makeDots(COLS * ROWS, 7919);
+      const PRIMARY = 'color-mix(in srgb, #374151 92%, white)';
+      const ACCENT  = 'color-mix(in srgb, #E11D48 80%, white)';
+
+      const baseGrid   = document.getElementById('hero-base-grid');
+      const hlGrid     = document.getElementById('hero-highlight-grid');
+      const hlLayer    = document.getElementById('hero-highlight');
+      const backdrop   = document.getElementById('hero-backdrop');
+      if (!baseGrid || !hlGrid) return;
+
+      const cols = `repeat(${COLS}, minmax(0, 1fr))`;
+      baseGrid.style.gridTemplateColumns = cols;
+      hlGrid.style.gridTemplateColumns   = cols;
+      fillGrid(baseGrid, DOTS, PRIMARY, ACCENT);
+      fillGrid(hlGrid,   DOTS, PRIMARY, ACCENT);
+
+      // Cursor trail: 6 lagged positions, decaying opacity
+      const OPACITIES = [1, 0.78, 0.6, 0.44, 0.3, 0.18];
+      const RADIUS    = 60;
+      let trail = Array.from({length: 6}, () => ({x: -9999, y: -9999}));
+      let mx = -9999, my = -9999;
+
+      setInterval(() => {
+        trail.pop();
+        trail.unshift({x: mx, y: my});
+        const mask = trail.map(({x, y}, i) => {
+          const o = OPACITIES[i];
+          return `radial-gradient(circle ${RADIUS}px at ${x}px ${y}px,rgba(0,0,0,${o}) 0%,rgba(0,0,0,${o}) 45%,transparent 100%)`;
+        }).join(',');
+        hlLayer.style.webkitMaskImage    = mask;
+        hlLayer.style.maskImage          = mask;
+        hlLayer.style.webkitMaskComposite = 'source-over';
+        hlLayer.style.maskComposite      = 'add';
+        hlLayer.style.filter =
+          'drop-shadow(0 2px 8px rgba(0,0,0,.20)) ' +
+          'drop-shadow(0 0 8px color-mix(in srgb,#374151 55%,transparent))';
+      }, 45);
+
+      window.addEventListener('pointermove', e => {
+        const r = backdrop.getBoundingClientRect();
+        mx = e.clientX - r.left;
+        my = e.clientY - r.top;
+      }, {passive: true});
+
+      document.addEventListener('pointerleave', () => { mx = -9999; my = -9999; });
+    }
+
+    // Static decorative grid for the dark contact section
+    function initContactGrid() {
+      const grid = document.getElementById('contact-grid');
+      if (!grid) return;
+      const COLS = 60, ROWS = 12;
+      const DOTS = makeDots(COLS * ROWS, 31337);
+      grid.style.gridTemplateColumns = `repeat(${COLS}, minmax(0, 1fr))`;
+      const frag = document.createDocumentFragment();
+      for (const type of DOTS) {
+        const d = document.createElement('div');
+        d.className = 'dot';
+        if (type !== 'empty') d.style.backgroundColor = 'rgba(255,255,255,0.7)';
+        frag.appendChild(d);
+      }
+      grid.appendChild(frag);
+    }
+
+    // Highlight active nav link on scroll
+    function initScrollNav() {
+      const sections = document.querySelectorAll('section[id]');
+      const links    = document.querySelectorAll('#main-nav a');
+      if (!sections.length || !links.length) return;
+      new IntersectionObserver(entries => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            links.forEach(l => l.classList.remove('active'));
+            const a = document.querySelector(`#main-nav a[href="#${e.target.id}"]`);
+            if (a) a.classList.add('active');
+          }
+        }
+      }, {rootMargin: '-35% 0px -60% 0px'}).observe;
+      // bind each section
+      const io = new IntersectionObserver(entries => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            links.forEach(l => l.classList.remove('active'));
+            const a = document.querySelector(`#main-nav a[href="#${e.target.id}"]`);
+            if (a) a.classList.add('active');
+          }
+        }
+      }, {rootMargin: '-35% 0px -60% 0px'});
+      sections.forEach(s => io.observe(s));
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initHero();
+      initContactGrid();
+      initScrollNav();
+    });
+  </script>
+</body>
+</html>
