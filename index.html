@@ -12,14 +12,14 @@
   <style>
     /* ─── DESIGN TOKENS ─── */
     :root {
-      --primary:    #374151;
-      --accent:     #E11D48;
-      --accent-dim: #be123c;
-      --ink:        #111827;
-      --muted:      #6B7280;
-      --fog:        #F3F4F6;
-      --fog-light:  #F9FAFB;
-      --line:       #E5E7EB;
+      --primary:    #1B5E3B;
+      --accent:     #169B62;
+      --accent-dim: #0E7A4C;
+      --ink:        #0A2416;
+      --muted:      #52796F;
+      --fog:        #EEF5F1;
+      --fog-light:  #F5FAF7;
+      --line:       #C8DDD4;
       --white:      #ffffff;
 
       --font-sans:  'Inter', system-ui, -apple-system, sans-serif;
@@ -46,6 +46,25 @@
     }
     @media (min-width: 640px)  { .container { padding: 0 2rem; } }
     @media (min-width: 1024px) { .container { padding: 0 2.5rem; } }
+
+    /* ─── SHAMROCK CURSOR ─── */
+    @media (pointer: fine) {
+      html, body, * { cursor: none !important; }
+
+      #shamrock-cursor {
+        position: fixed;
+        top: 0; left: 0;
+        width: 36px; height: 40px;
+        pointer-events: none;
+        z-index: 99999;
+        will-change: transform;
+        opacity: 0;
+        transition: opacity 0.25s;
+        transform: translate(-18px, -20px);
+      }
+      #shamrock-cursor.visible { opacity: 1; }
+      #shamrock-cursor svg { display: block; }
+    }
 
     /* ─── SKIP LINK ─── */
     .skip-link {
@@ -265,7 +284,7 @@
     }
     .tag {
       padding: 0.25rem 0.625rem;
-      background: rgba(225,29,72,0.07); color: var(--accent);
+      background: rgba(22,155,98,0.07); color: var(--accent);
       font-size: 0.75rem; font-weight: 600;
       border-radius: 9999px; letter-spacing: 0.03em;
     }
@@ -301,10 +320,10 @@
       font-size: 0.6875rem; font-weight: 700;
       letter-spacing: 0.04em; text-transform: uppercase;
       border-radius: 9999px; text-decoration: none;
-      background: rgba(225,29,72,0.08); color: var(--accent);
+      background: rgba(22,155,98,0.08); color: var(--accent);
       transition: background 0.15s;
     }
-    .pub-link:hover { background: rgba(225,29,72,0.16); }
+    .pub-link:hover { background: rgba(22,155,98,0.16); }
 
     /* ─── PROJECTS ─── */
     .projects-grid { display: grid; gap: 1.25rem; }
@@ -322,7 +341,7 @@
     }
     .project-icon {
       width: 2.5rem; height: 2.5rem; border-radius: 0.5rem;
-      background: rgba(225,29,72,0.08);
+      background: rgba(22,155,98,0.08);
       display: flex; align-items: center; justify-content: center;
       font-size: 1rem; color: var(--accent); flex-shrink: 0;
     }
@@ -383,6 +402,22 @@
   </style>
 </head>
 <body>
+  <!-- shamrock cursor (desktop only) -->
+  <div id="shamrock-cursor" aria-hidden="true">
+    <svg width="36" height="40" viewBox="0 0 36 40" xmlns="http://www.w3.org/2000/svg">
+      <!-- top leaf -->
+      <ellipse cx="18" cy="9" rx="8" ry="9" fill="#169B62"/>
+      <!-- bottom-left leaf -->
+      <ellipse cx="9" cy="23" rx="8" ry="9" transform="rotate(-30 9 23)" fill="#169B62"/>
+      <!-- bottom-right leaf -->
+      <ellipse cx="27" cy="23" rx="8" ry="9" transform="rotate(30 27 23)" fill="#169B62"/>
+      <!-- centre overlap -->
+      <circle cx="18" cy="19" r="6" fill="#169B62"/>
+      <!-- stem -->
+      <path d="M18 25 Q15 32 12 39" stroke="#169B62" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    </svg>
+  </div>
+
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
   <!-- ═══ HEADER ═══ -->
@@ -767,8 +802,8 @@
     function initHero() {
       const COLS = 80, ROWS = 30;
       const DOTS = makeDots(COLS * ROWS, 7919);
-      const PRIMARY = 'color-mix(in srgb, #374151 92%, white)';
-      const ACCENT  = 'color-mix(in srgb, #E11D48 80%, white)';
+      const PRIMARY = 'color-mix(in srgb, #1B5E3B 92%, white)';
+      const ACCENT  = 'color-mix(in srgb, #169B62 80%, white)';
 
       const baseGrid   = document.getElementById('hero-base-grid');
       const hlGrid     = document.getElementById('hero-highlight-grid');
@@ -801,7 +836,7 @@
         hlLayer.style.maskComposite      = 'add';
         hlLayer.style.filter =
           'drop-shadow(0 2px 8px rgba(0,0,0,.20)) ' +
-          'drop-shadow(0 0 8px color-mix(in srgb,#374151 55%,transparent))';
+          'drop-shadow(0 0 8px color-mix(in srgb,#169B62 55%,transparent))';
       }, 45);
 
       window.addEventListener('pointermove', e => {
@@ -857,6 +892,24 @@
       sections.forEach(s => io.observe(s));
     }
 
+    // Shamrock cursor (desktop only)
+    function initShamrockCursor() {
+      if (!window.matchMedia('(pointer: fine)').matches) return;
+      const el = document.getElementById('shamrock-cursor');
+      if (!el) return;
+
+      let raf;
+      document.addEventListener('mousemove', e => {
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => {
+          el.style.transform = `translate(${e.clientX - 18}px, ${e.clientY - 20}px)`;
+          el.classList.add('visible');
+        });
+      }, {passive: true});
+
+      document.addEventListener('mouseleave', () => el.classList.remove('visible'));
+    }
+
     // Mobile hamburger menu
     function initMobileNav() {
       const btn     = document.getElementById('hamburger');
@@ -880,6 +933,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+      initShamrockCursor();
       initHero();
       initContactGrid();
       initScrollNav();
